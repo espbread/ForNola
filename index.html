@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>For Nolinski — Rajah's Royal Message</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Fredoka:wght@600;700&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  body {
+    width: 100%;
+    height: 740px;
+    overflow: hidden;
+    font-family: 'Fredoka', sans-serif;
+    background: radial-gradient(circle at 50% 18%, #3b177e 0%, #1d0a47 48%, #0a031e 100%);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+  }
+
+  /* Twinkling Starfield */
+  #stars-container {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .star {
+    position: absolute;
+    background: #fff9db;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ffe484;
+    animation: twinkle var(--dur, 3s) ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.25; transform: scale(0.75); }
+    100% { opacity: 1; transform: scale(1.25); }
+  }
+
+  /* Crescent Moon & Clouds */
+  .moon-wrap {
+    position: absolute;
+    top: 32px;
+    right: 72px;
+    width: 88px;
+    height: 88px;
+    z-index: 2;
+    pointer-events: none;
+    filter: drop-shadow(0 0 28px rgba(255, 224, 115, 0.75));
+  }
+
+  /* Agrabah Palace Silhouette */
+  .palace-backdrop {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 240px;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.55;
+  }
+
+  /* Header Banner */
+  .header-banner {
+    position: relative;
+    z-index: 15;
+    margin-top: 22px;
+    text-align: center;
+    padding: 10px 28px;
+    border-radius: 999px;
+    background: rgba(20, 6, 52, 0.65);
+    border: 1.5px solid rgba(255, 217, 102, 0.45);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+  }
+
+  .header-banner h1 {
+    font-family: 'Cinzel Decorative', cursive, sans-serif;
+    font-size: 1.6rem;
+    color: #ffe484;
+    text-shadow: 0 2px 14px rgba(255, 200, 70, 0.65);
+    letter-spacing: 1px;
+  }
+
+  .header-banner p {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.92rem;
+    color: #e2d1ff;
+    margin-top: 3px;
+  }
+
+  /* Main Interactive Stage */
+  #stage {
+    position: relative;
+    width: 96%;
+    max-width: 1040px;
+    height: 460px;
+    z-index: 10;
+    cursor: pointer;
+  }
+
+  .platforms-row {
+    position: absolute;
+    bottom: 52px;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 24px;
+  }
+
+  .spot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 165px;
+  }
+
+  /* Revealed Word Cards */
+  .word-card {
+    margin-bottom: 24px;
+    padding: 12px 22px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #ff5ca8 0%, #ff8c52 100%);
+    border: 2.5px solid #ffea9f;
+    box-shadow: 0 10px 28px rgba(255, 92, 168, 0.5), inset 0 2px 6px rgba(255, 255, 255, 0.45);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transform: translateY(35px) scale(0.35);
+    transition: opacity 0.42s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+    position: relative;
+  }
+
+  .word-card.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    animation: gentleFloat 3s ease-in-out infinite alternate;
+  }
+
+  .word-card.finale {
+    background: linear-gradient(135deg, #a63aff 0%, #ff3d9a 55%, #ff9e44 100%);
+    border-color: #fff3b0;
+    box-shadow: 0 0 36px rgba(255, 90, 180, 0.9), 0 0 14px rgba(255, 230, 128, 0.8);
+    font-size: 1.95rem;
+  }
+
+  @keyframes gentleFloat {
+    0% { transform: translateY(0px) scale(1); }
+    100% { transform: translateY(-7px) scale(1.03); }
+  }
+
+  /* Magic Carpet & Royal Velvet Cushions */
+  .cushion {
+    width: 118px;
+    height: 34px;
+    border-radius: 50px;
+    background: linear-gradient(180deg, #b646ff 0%, #6814b8 100%);
+    border: 3px solid #ffd56b;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.55), inset 0 3px 8px rgba(255, 255, 255, 0.35);
+    position: relative;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Gold Tassels on Cushions */
+  .cushion::before,
+  .cushion::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 12px;
+    background: #ffd56b;
+    border-radius: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  .cushion::before { left: -7px; }
+  .cushion::after { right: -7px; }
+
+  /* Magic Carpet Start Pad */
+  .cushion.magic-carpet {
+    width: 126px;
+    height: 28px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, #16c9bd 0%, #7c2ae8 50%, #16c9bd 100%);
+    border: 3px solid #ffe07d;
+    animation: carpetHover 2.4s ease-in-out infinite alternate;
+  }
+
+  @keyframes carpetHover {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-5px); }
+  }
+
+  .cushion.squish {
+    transform: scaleX(1.2) scaleY(0.72) !important;
+  }
+
+  /* Shockwave Ring on Landing */
+  .shockwave {
+    position: absolute;
+    width: 30px;
+    height: 12px;
+    border: 3px solid #ffe380;
+    border-radius: 50%;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    animation: ringExpand 0.6s ease-out forwards;
+    z-index: 8;
+  }
+
+  @keyframes ringExpand {
+    0% { width: 25px; height: 10px; opacity: 1; }
+    100% { width: 155px; height: 48px; opacity: 0; }
+  }
+
+  /* Chibi Rajah Container */
+  #rajah-wrapper {
+    position: absolute;
+    width: 136px;
+    height: 136px;
+    z-index: 25;
+    transform-origin: bottom center;
+    cursor: pointer;
+    filter: drop-shadow(0 12px 16px rgba(0, 0, 0, 0.45));
+    transition: filter 0.2s ease;
+  }
+
+  #rajah-wrapper:hover {
+    filter: drop-shadow(0 12px 22px rgba(255, 180, 90, 0.65));
+  }
+
+  #rajah-tail {
+    transform-origin: 30px 96px;
+    animation: tailSwish 1.6s ease-in-out infinite alternate;
+  }
+
+  @keyframes tailSwish {
+    0% { transform: rotate(-10deg); }
+    100% { transform: rotate(14deg); }
+  }
+
+  .heart-eye-pulse {
+    transform-origin: center;
+    animation: heartPulse 0.65s ease-in-out infinite alternate;
+  }
+
+  @keyframes heartPulse {
+    0% { transform: scale(0.92); }
+    100% { transform: scale(1.18); }
+  }
+
+  /* Floating Particles */
+  .particle {
+    position: absolute;
+    pointer-events: none;
+    font-size: 1.35rem;
+    z-index: 30;
+    animation: floatParticle 1.15s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+  }
+
+  @keyframes floatParticle {
+    0% { opacity: 1; transform: translate(0, 0) scale(0.6) rotate(0deg); }
+    100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(1.35) rotate(var(--rot)); }
+  }
+
+  /* Control Bar */
+  .controls {
+    position: relative;
+    z-index: 20;
+    margin-bottom: 22px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  button {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 1rem;
+    padding: 10px 22px;
+    border-radius: 999px;
+    border: 2px solid #ffe285;
+    background: linear-gradient(135deg, #7c2ae8 0%, #c438ff 100%);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  button:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 24px rgba(196, 56, 255, 0.6);
+  }
+
+  button:active {
+    transform: translateY(1px) scale(0.98);
+  }
+
+  button.secondary {
+    background: linear-gradient(135deg, #ff5ca8 0%, #ff884d 100%);
+  }
+</style>
+</head>
+<body>
+
+  <!-- Starfield -->
+  <div id="stars-container"></div>
+
+  <!-- Glowing Crescent Moon -->
+  <svg class="moon-wrap" viewBox="0 0 100 100">
+    <path d="M65 15 A38 38 0 1 0 85 72 A30 30 0 1 1 65 15 Z" fill="#ffe999"/>
+  </svg>
+
+  <!-- Agrabah Palace Silhouette -->
+  <svg class="palace-backdrop" viewBox="0 0 1440 260" preserveAspectRatio="none">
+    <path d="M0,260 L0,200 L120,200 L120,165 Q140,130 160,165 L160,200 L290,200 L290,140 Q330,75 370,140 L370,200 L520,200 L520,120 L545,120 L545,95 Q600,25 655,95 L655,120 L680,120 L680,200 L790,200 L790,150 Q820,105 850,150 L850,200 L1020,200 L1020,135 Q1065,70 1110,135 L1110,200 L1260,200 L1260,170 Q1280,140 1300,170 L1300,200 L1440,200 L1440,260 Z" fill="#12052e"/>
+    <!-- Glowing Palace Windows -->
+    <rect x="585" y="125" width="12" height="22" rx="6" fill="#ffd666" opacity="0.7"/>
+    <rect x="605" y="125" width="12" height="22" rx="6" fill="#ffd666" opacity="0.7"/>
+    <rect x="324" y="155" width="12" height="20" rx="6" fill="#ffd666" opacity="0.6"/>
+    <rect x="1059" y="150" width="12" height="20" rx="6" fill="#ffd666" opacity="0.6"/>
+  </svg>
+
+  <!-- Header Banner -->
+  <div class="header-banner">
+    <h1 id="banner-title">Rajah's Royal Message ✨</h1>
+    <p id="banner-sub">Tap anywhere or click "Next Jump" as Rajah leaps across the night sky!</p>
+  </div>
+
+  <!-- Interactive Stage -->
+  <div id="stage">
+    <!-- Custom Chibi Rajah SVG -->
+    <div id="rajah-wrapper" title="Click to pet Rajah!">
+      <svg viewBox="0 0 150 150" width="136" height="136">
+        <!-- Animated Swishing Tail -->
+        <g id="rajah-tail">
+          <path d="M32 104 Q8 84 18 60 Q26 44 16 36" fill="none" stroke="#ff9124" stroke-width="12" stroke-linecap="round"/>
+          <path d="M32 104 Q8 84 18 60 Q26 44 16 36" fill="none" stroke="#231815" stroke-width="12" stroke-dasharray="7 10" stroke-linecap="round"/>
+        </g>
+
+        <!-- Back Hind Legs & Paws -->
+        <ellipse cx="48" cy="112" rx="16" ry="12" fill="#e67812"/>
+        <ellipse cx="102" cy="112" rx="16" ry="12" fill="#e67812"/>
+
+        <!-- Chubby Tiger Torso -->
+        <ellipse cx="75" cy="100" rx="36" ry="26" fill="#ff962c"/>
+        <!-- Tiger Body Stripes -->
+        <path d="M44 92 Q54 95 50 102" fill="none" stroke="#231815" stroke-width="4" stroke-linecap="round"/>
+        <path d="M106 92 Q96 95 100 102" fill="none" stroke="#231815" stroke-width="4" stroke-linecap="round"/>
+        <!-- Fluffy Cream Belly -->
+        <ellipse cx="75" cy="105" rx="23" ry="17" fill="#fff6e8"/>
+
+        <!-- Royal Turquoise & Gold Collar -->
+        <path d="M48 82 Q75 95 102 82" fill="none" stroke="#15decb" stroke-width="8" stroke-linecap="round"/>
+        <path d="M48 82 Q75 95 102 82" fill="none" stroke="#ffd859" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="75" cy="89" r="6.5" fill="#ffd859" stroke="#b87d00" stroke-width="2"/>
+        <polygon points="75,85 78,89 75,93 72,89" fill="#ff4791"/>
+
+        <!-- Front Paws -->
+        <ellipse cx="55" cy="122" rx="12" ry="8" fill="#ff962c" stroke="#231815" stroke-width="1.5"/>
+        <ellipse cx="95" cy="122" rx="12" ry="8" fill="#ff962c" stroke="#231815" stroke-width="1.5"/>
+        <line x1="52" y1="124" x2="52" y2="128" stroke="#231815" stroke-width="2" stroke-linecap="round"/>
+        <line x1="57" y1="124" x2="57" y2="128" stroke="#231815" stroke-width="2" stroke-linecap="round"/>
+        <line x1="93" y1="124" x2="93" y2="128" stroke="#231815" stroke-width="2" stroke-linecap="round"/>
+        <line x1="98" y1="124" x2="98" y2="128" stroke="#231815" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Ears -->
+        <circle cx="48" cy="36" r="12" fill="#ff962c" stroke="#231815" stroke-width="2"/>
+        <circle cx="48" cy="36" r="6.5" fill="#ffacc2"/>
+        <circle cx="102" cy="36" r="12" fill="#ff962c" stroke="#231815" stroke-width="2"/>
+        <circle cx="102" cy="36" r="6.5" fill="#ffacc2"/>
+
+        <!-- Big Fluffy White Cheek Ruffs -->
+        <path d="M32 62 Q24 54 35 48 Q28 42 42 42 L108 42 Q122 42 115 48 Q126 54 118 62 Q126 72 110 78 Q94 86 75 86 Q56 86 40 78 Q24 72 32 62 Z" fill="#fff6e8" stroke="#f2dec2" stroke-width="1.5"/>
+
+        <!-- Main Head -->
+        <ellipse cx="75" cy="56" rx="31" ry="26" fill="#ff962c"/>
+
+        <!-- Forehead & Cheek Stripes -->
+        <path d="M67 33 L75 43 L83 33" fill="none" stroke="#231815" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="75" y1="30" x2="75" y2="41" stroke="#231815" stroke-width="3.5" stroke-linecap="round"/>
+        <path d="M44 52 L53 54 M43 59 L51 60" stroke="#231815" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M106 52 L97 54 M107 59 L99 60" stroke="#231815" stroke-width="3.2" stroke-linecap="round"/>
+
+        <!-- Eyebrows -->
+        <ellipse cx="62" cy="45" rx="6" ry="3" fill="#fff6e8"/>
+        <ellipse cx="88" cy="45" rx="6" ry="3" fill="#fff6e8"/>
+
+        <!-- Rosy Blush Cheeks -->
+        <ellipse cx="52" cy="65" rx="6.5" ry="4" fill="#ff6b9d" opacity="0.65"/>
+        <ellipse cx="98" cy="65" rx="6.5" ry="4" fill="#ff6b9d" opacity="0.65"/>
+
+        <!-- Expression 1: Warm Wide Chibi Eyes -->
+        <g id="eyes-normal">
+          <circle cx="62" cy="55" r="5.8" fill="#231815"/>
+          <circle cx="60" cy="53" r="2.2" fill="#ffffff"/>
+          <circle cx="64" cy="57" r="1" fill="#ffffff"/>
+          <circle cx="88" cy="55" r="5.8" fill="#231815"/>
+          <circle cx="86" cy="53" r="2.2" fill="#ffffff"/>
+          <circle cx="90" cy="57" r="1" fill="#ffffff"/>
+        </g>
+
+        <!-- Expression 2: Happy Purring Arcs (^ ^) -->
+        <g id="eyes-happy" style="display: none;">
+          <path d="M55 56 Q62 47 69 56" fill="none" stroke="#231815" stroke-width="3.8" stroke-linecap="round"/>
+          <path d="M81 56 Q88 47 95 56" fill="none" stroke="#231815" stroke-width="3.8" stroke-linecap="round"/>
+        </g>
+
+        <!-- Expression 3: Pulsing Heart Eyes (♥ ♥) -->
+        <g id="eyes-heart" style="display: none;">
+          <path class="heart-eye-pulse" d="M62 61 C62 61 54 55 54 50 C54 47 57 45 60 47 C61 48 62 49 62 49 C62 49 63 48 64 47 C67 45 70 47 70 50 C70 55 62 61 62 61 Z" fill="#ff2e7e"/>
+          <path class="heart-eye-pulse" d="M88 61 C88 61 80 55 80 50 C80 47 83 45 86 47 C87 48 88 49 88 49 C88 49 89 48 90 47 C93 45 96 47 96 50 C96 55 88 61 88 61 Z" fill="#ff2e7e"/>
+        </g>
+
+        <!-- Cute Muzzle, Pink Nose & Smile -->
+        <ellipse cx="75" cy="67" rx="15" ry="10" fill="#fff6e8"/>
+        <polygon points="69,61 81,61 75,68" fill="#ff6b8b"/>
+        <path d="M75 68 Q69 75 63 70 M75 68 Q81 75 87 70" fill="none" stroke="#231815" stroke-width="2.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <!-- Cushions & Word Row -->
+    <div class="platforms-row" id="platforms-row"></div>
+  </div>
+
+  <!-- Interactive Buttons -->
+  <div class="controls">
+    <button id="next-btn">Next Jump 🐾</button>
+    <button id="replay-btn">Replay All ✨</button>
+    <button id="pet-btn" class="secondary">Pet Rajah 🧡</button>
+    <button id="sound-btn">🔊 Sound: ON</button>
+  </div>
+
+<script>
+  const WORDS = ["I", "Love", "You", "Nolinski"];
+  const CHIME_NOTES = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+
+  const stage = document.getElementById('stage');
+  const row = document.getElementById('platforms-row');
+  const rajah = document.getElementById('rajah-wrapper');
+  const bannerTitle = document.getElementById('banner-title');
+  const bannerSub = document.getElementById('banner-sub');
+
+  const eyesNormal = document.getElementById('eyes-normal');
+  const eyesHappy = document.getElementById('eyes-happy');
+  const eyesHeart = document.getElementById('eyes-heart');
+
+  let currentSpot = 0;
+  let isJumping = false;
+  let soundEnabled = true;
+  let audioCtx = null;
+  let autoTimer = null;
+  const spots = [];
+
+  // Generate Twinkling Stars
+  const starsContainer = document.getElementById('stars-container');
+  for (let i = 0; i < 65; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    const size = 2 + Math.random() * 4;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.left = (Math.random() * 100) + '%';
+    star.style.top = (Math.random() * 72) + '%';
+    star.style.setProperty('--dur', (1.8 + Math.random() * 3) + 's');
+    starsContainer.appendChild(star);
+  }
+
+  // Build Starting Magic Carpet + 4 Royal Cushions
+  const startSpot = document.createElement('div');
+  startSpot.className = 'spot';
+  startSpot.innerHTML = `
+    <div class="word-card" style="visibility:hidden">Start</div>
+    <div class="cushion magic-carpet"></div>
+  `;
+  row.appendChild(startSpot);
+  spots.push(startSpot);
+
+  WORDS.forEach((word, index) => {
+    const spot = document.createElement('div');
+    spot.className = 'spot';
+    const isFinale = index === WORDS.length - 1;
+    spot.innerHTML = `
+      <div class="word-card ${isFinale ? 'finale' : ''}" id="word-${index}">${word}</div>
+      <div class="cushion" id="cushion-${index}"></div>
+    `;
+    row.appendChild(spot);
+    spots.push(spot);
+  });
+
+  // Web Audio Synthesizer for Harp Chimes & Leaps
+  function ensureAudio() {
+    if (!audioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (AudioContextClass) audioCtx = new AudioContextClass();
+    }
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+  }
+
+  function playJumpWhoosh() {
+    if (!soundEnabled) return;
+    ensureAudio();
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(240, now);
+    osc.frequency.exponentialRampToValueAtTime(520, now + 0.22);
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.24);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.25);
+  }
+
+  function playHarpChime(wordIndex) {
+    if (!soundEnabled) return;
+    ensureAudio();
+    if (!audioCtx) return;
+    const baseFreq = CHIME_NOTES[wordIndex % CHIME_NOTES.length];
+    const isFinale = wordIndex === WORDS.length - 1;
+    const freqs = isFinale ? [baseFreq, baseFreq * 1.25, baseFreq * 1.5, baseFreq * 2] : [baseFreq, baseFreq * 1.5];
+
+    freqs.forEach((f, idx) => {
+      const now = audioCtx.currentTime + idx * 0.07;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(f, now);
+      gain.gain.setValueAtTime(0.14, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.95);
+    });
+  }
+
+  function setEyes(mode) {
+    eyesNormal.style.display = mode === 'normal' ? 'block' : 'none';
+    eyesHappy.style.display = mode === 'happy' ? 'block' : 'none';
+    eyesHeart.style.display = mode === 'heart' ? 'block' : 'none';
+  }
+
+  function getSpotCoords(index) {
+    const stageRect = stage.getBoundingClientRect();
+    const cushion = spots[index].querySelector('.cushion');
+    const rect = cushion.getBoundingClientRect();
+    return {
+      x: rect.left - stageRect.left + rect.width / 2 - 68,
+      y: rect.top - stageRect.top - 118,
+      centerX: rect.left - stageRect.left + rect.width / 2,
+      centerY: rect.top - stageRect.top + rect.height / 2
+    };
+  }
+
+  function placeRajah(index) {
+    const pos = getSpotCoords(index);
+    rajah.style.left = pos.x + 'px';
+    rajah.style.top = pos.y + 'px';
+    rajah.style.transform = 'scale(1, 1) rotate(0deg)';
+  }
+
+  function spawnShockwave(x, y) {
+    const ring = document.createElement('div');
+    ring.className = 'shockwave';
+    ring.style.left = x + 'px';
+    ring.style.top = y + 'px';
+    stage.appendChild(ring);
+    setTimeout(() => ring.remove(), 650);
+  }
+
+  function spawnParticles(x, y, count = 10) {
+    const symbols = ['💖', '💜', '✨', '🧡', '🐾', '⭐'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = symbols[i % symbols.length];
+      p.style.left = (x + 56) + 'px';
+      p.style.top = (y + 48) + 'px';
+      p.style.setProperty('--dx', ((Math.random() - 0.5) * 170) + 'px');
+      p.style.setProperty('--dy', (-55 - Math.random() * 110) + 'px');
+      p.style.setProperty('--rot', ((Math.random() - 0.5) * 70) + 'deg');
+      stage.appendChild(p);
+      setTimeout(() => p.remove(), 1150);
+    }
+  }
+
+  function jumpTo(targetIndex, callback) {
+    if (isJumping || targetIndex >= spots.length) return;
+    isJumping = true;
+
+    const start = getSpotCoords(currentSpot);
+    const end = getSpotCoords(targetIndex);
+
+    // Pre-jump crouch anticipation
+    rajah.style.transform = 'scaleX(1.18) scaleY(0.8)';
+    setEyes('normal');
+
+    setTimeout(() => {
+      playJumpWhoosh();
+      const duration = 740;
+      const startTime = performance.now();
+
+      function animateFrame(now) {
+        const t = Math.min(1, (now - startTime) / duration);
+        const x = start.x + (end.x - start.x) * t;
+        const jumpHeight = 148;
+        const arc = -jumpHeight * 4 * t * (1 - t);
+        const y = start.y + (end.y - start.y) * t + arc;
+
+        // Mid-air tilt & stretch
+        const tilt = (1 - 2 * t) * -14;
+        const stretchY = 1 + Math.sin(t * Math.PI) * 0.12;
+        const stretchX = 1 - Math.sin(t * Math.PI) * 0.08;
+
+        rajah.style.left = x + 'px';
+        rajah.style.top = y + 'px';
+        rajah.style.transform = `rotate(${tilt}deg) scale(${stretchX}, ${stretchY})`;
+
+        if (t < 1) {
+          requestAnimationFrame(animateFrame);
+        } else {
+          // Landed on cushion
+          currentSpot = targetIndex;
+          rajah.style.left = end.x + 'px';
+          rajah.style.top = end.y + 'px';
+          rajah.style.transform = 'scaleX(1.16) scaleY(0.84)';
+          setTimeout(() => {
+            rajah.style.transform = 'scale(1, 1) rotate(0deg)';
+          }, 190);
+
+          const cushion = spots[targetIndex].querySelector('.cushion');
+          cushion.classList.add('squish');
+          setTimeout(() => cushion.classList.remove('squish'), 240);
+
+          spawnShockwave(end.centerX, end.centerY);
+
+          if (targetIndex > 0) {
+            const wordIndex = targetIndex - 1;
+            const card = document.getElementById('word-' + wordIndex);
+            if (card) card.classList.add('visible');
+            playHarpChime(wordIndex);
+
+            const isFinale = targetIndex === spots.length - 1;
+            setEyes(isFinale ? 'heart' : 'happy');
+            spawnParticles(end.x, end.y, isFinale ? 22 : 10);
+
+            if (isFinale) {
+              bannerTitle.textContent = "I Love You Nolinski 💜🐯✨";
+              bannerSub.textContent = "Click 'Pet Rajah' or 'Replay All' to see him leap again!";
+            }
+          }
+
+          isJumping = false;
+          if (callback) callback();
+        }
+      }
+
+      requestAnimationFrame(animateFrame);
+    }, 140);
+  }
+
+  function playFullSequence() {
+    if (isJumping) return;
+    if (autoTimer) clearTimeout(autoTimer);
+
+    document.querySelectorAll('.word-card').forEach(c => c.classList.remove('visible'));
+    bannerTitle.textContent = "Rajah's Royal Message ✨";
+    bannerSub.textContent = "Watch Rajah leap from cushion to cushion!";
+    setEyes('normal');
+    currentSpot = 0;
+    placeRajah(0);
+
+    function stepNext() {
+      if (currentSpot < spots.length - 1) {
+        autoTimer = setTimeout(() => {
+          jumpTo(currentSpot + 1, stepNext);
+        }, 340);
+      }
+    }
+
+    autoTimer = setTimeout(stepNext, 420);
+  }
+
+  // Controls & Interactivity
+  document.getElementById('next-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (autoTimer) clearTimeout(autoTimer);
+    if (currentSpot < spots.length - 1) {
+      jumpTo(currentSpot + 1);
+    } else {
+      playFullSequence();
+    }
+  });
+
+  document.getElementById('replay-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    playFullSequence();
+  });
+
+  function petRajah(e) {
+    if (e) e.stopPropagation();
+    const pos = getSpotCoords(currentSpot);
+    setEyes('heart');
+    spawnParticles(pos.x, pos.y, 16);
+    playHarpChime(WORDS.length - 1);
+    rajah.style.transform = 'scale(1.12, 0.92)';
+    setTimeout(() => {
+      rajah.style.transform = 'scale(1, 1)';
+    }, 220);
+  }
+
+  document.getElementById('pet-btn').addEventListener('click', petRajah);
+  rajah.addEventListener('click', petRajah);
+
+  stage.addEventListener('click', () => {
+    if (currentSpot < spots.length - 1) {
+      jumpTo(currentSpot + 1);
+    } else {
+      petRajah();
+    }
+  });
+
+  document.getElementById('sound-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    soundEnabled = !soundEnabled;
+    e.target.textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+  });
+
+  window.addEventListener('resize', () => placeRajah(currentSpot));
+  window.addEventListener('load', () => {
+    placeRajah(0);
+    playFullSequence();
+  });
+</script>
+</body>
+</html>
