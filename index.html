@@ -49,7 +49,7 @@
     100% { opacity: 1; transform: scale(1.25); }
   }
 
-  /* Crescent Moon & Clouds */
+  /* Crescent Moon */
   .moon-wrap {
     position: absolute;
     top: 32px;
@@ -106,7 +106,7 @@
   #stage {
     position: relative;
     width: 96%;
-    max-width: 1040px;
+    max-width: 1060px;
     height: 460px;
     z-index: 10;
     cursor: pointer;
@@ -120,7 +120,7 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    padding: 0 24px;
+    padding: 0 16px;
   }
 
   .spot {
@@ -128,7 +128,7 @@
     flex-direction: column;
     align-items: center;
     position: relative;
-    width: 165px;
+    width: 140px;
   }
 
   /* Revealed Word Cards */
@@ -170,7 +170,7 @@
 
   /* Magic Carpet & Royal Velvet Cushions */
   .cushion {
-    width: 118px;
+    width: 112px;
     height: 34px;
     border-radius: 50px;
     background: linear-gradient(180deg, #b646ff 0%, #6814b8 100%);
@@ -196,9 +196,9 @@
   .cushion::before { left: -7px; }
   .cushion::after { right: -7px; }
 
-  /* Magic Carpet Start Pad */
+  /* Magic Carpet Start & Finale Pads */
   .cushion.magic-carpet {
-    width: 126px;
+    width: 120px;
     height: 28px;
     border-radius: 14px;
     background: linear-gradient(90deg, #16c9bd 0%, #7c2ae8 50%, #16c9bd 100%);
@@ -334,7 +334,6 @@
   <!-- Agrabah Palace Silhouette -->
   <svg class="palace-backdrop" viewBox="0 0 1440 260" preserveAspectRatio="none">
     <path d="M0,260 L0,200 L120,200 L120,165 Q140,130 160,165 L160,200 L290,200 L290,140 Q330,75 370,140 L370,200 L520,200 L520,120 L545,120 L545,95 Q600,25 655,95 L655,120 L680,120 L680,200 L790,200 L790,150 Q820,105 850,150 L850,200 L1020,200 L1020,135 Q1065,70 1110,135 L1110,200 L1260,200 L1260,170 Q1280,140 1300,170 L1300,200 L1440,200 L1440,260 Z" fill="#12052e"/>
-    <!-- Glowing Palace Windows -->
     <rect x="585" y="125" width="12" height="22" rx="6" fill="#ffd666" opacity="0.7"/>
     <rect x="605" y="125" width="12" height="22" rx="6" fill="#ffd666" opacity="0.7"/>
     <rect x="324" y="155" width="12" height="20" rx="6" fill="#ffd666" opacity="0.6"/>
@@ -364,10 +363,8 @@
 
         <!-- Chubby Tiger Torso -->
         <ellipse cx="75" cy="100" rx="36" ry="26" fill="#ff962c"/>
-        <!-- Tiger Body Stripes -->
         <path d="M44 92 Q54 95 50 102" fill="none" stroke="#231815" stroke-width="4" stroke-linecap="round"/>
         <path d="M106 92 Q96 95 100 102" fill="none" stroke="#231815" stroke-width="4" stroke-linecap="round"/>
-        <!-- Fluffy Cream Belly -->
         <ellipse cx="75" cy="105" rx="23" ry="17" fill="#fff6e8"/>
 
         <!-- Royal Turquoise & Gold Collar -->
@@ -486,7 +483,7 @@
     starsContainer.appendChild(star);
   }
 
-  // Build Starting Magic Carpet + 4 Royal Cushions
+  // 1. Starting Magic Carpet Pad
   const startSpot = document.createElement('div');
   startSpot.className = 'spot';
   startSpot.innerHTML = `
@@ -496,17 +493,28 @@
   row.appendChild(startSpot);
   spots.push(startSpot);
 
+  // 2. The 4 Royal Word Cushions
   WORDS.forEach((word, index) => {
     const spot = document.createElement('div');
     spot.className = 'spot';
-    const isFinale = index === WORDS.length - 1;
+    const isFinaleWord = index === WORDS.length - 1;
     spot.innerHTML = `
-      <div class="word-card ${isFinale ? 'finale' : ''}" id="word-${index}">${word}</div>
+      <div class="word-card ${isFinaleWord ? 'finale' : ''}" id="word-${index}">${word}</div>
       <div class="cushion" id="cushion-${index}"></div>
     `;
     row.appendChild(spot);
     spots.push(spot);
   });
+
+  // 3. Ending Magic Carpet Pad (so Rajah hops off "Nolinski" and leaves it uncovered)
+  const endSpot = document.createElement('div');
+  endSpot.className = 'spot';
+  endSpot.innerHTML = `
+    <div class="word-card" style="visibility:hidden">End</div>
+    <div class="cushion magic-carpet"></div>
+  `;
+  row.appendChild(endSpot);
+  spots.push(endSpot);
 
   // Web Audio Synthesizer for Harp Chimes & Leaps
   function ensureAudio() {
@@ -623,13 +631,13 @@
 
     setTimeout(() => {
       playJumpWhoosh();
-      const duration = 740;
+      const duration = 680;
       const startTime = performance.now();
 
       function animateFrame(now) {
         const t = Math.min(1, (now - startTime) / duration);
         const x = start.x + (end.x - start.x) * t;
-        const jumpHeight = 148;
+        const jumpHeight = 145;
         const arc = -jumpHeight * 4 * t * (1 - t);
         const y = start.y + (end.y - start.y) * t + arc;
 
@@ -660,29 +668,38 @@
 
           spawnShockwave(end.centerX, end.centerY);
 
-          if (targetIndex > 0) {
+          // Reveal word if landing on cushions 1 through 4
+          if (targetIndex > 0 && targetIndex <= WORDS.length) {
             const wordIndex = targetIndex - 1;
             const card = document.getElementById('word-' + wordIndex);
             if (card) card.classList.add('visible');
             playHarpChime(wordIndex);
+            setEyes('happy');
+            spawnParticles(end.x, end.y, 10);
+          }
 
-            const isFinale = targetIndex === spots.length - 1;
-            setEyes(isFinale ? 'heart' : 'happy');
-            spawnParticles(end.x, end.y, isFinale ? 22 : 10);
-
-            if (isFinale) {
-              bannerTitle.textContent = "I Love You Nolinski 💜🐯✨";
-              bannerSub.textContent = "Click 'Pet Rajah' or 'Replay All' to see him leap again!";
-            }
+          // Finale celebration on the 5th jump (Ending Magic Carpet)
+          const isFinale = targetIndex === spots.length - 1;
+          if (isFinale) {
+            playHarpChime(WORDS.length - 1);
+            setEyes('heart');
+            spawnParticles(end.x, end.y, 24);
+            bannerTitle.textContent = "I Love You Nolinski 💜🐯✨";
+            bannerSub.textContent = "Click 'Pet Rajah' or 'Replay All' to see him leap again!";
           }
 
           isJumping = false;
-          if (callback) callback();
+          if (callback) {
+            callback();
+          } else if (targetIndex === WORDS.length) {
+            // If clicking manually, automatically hop off "Nolinski" onto the ending Magic Carpet
+            setTimeout(() => jumpTo(targetIndex + 1), 260);
+          }
         }
       }
 
       requestAnimationFrame(animateFrame);
-    }, 140);
+    }, 130);
   }
 
   function playFullSequence() {
@@ -700,7 +717,7 @@
       if (currentSpot < spots.length - 1) {
         autoTimer = setTimeout(() => {
           jumpTo(currentSpot + 1, stepNext);
-        }, 340);
+        }, 300);
       }
     }
 
